@@ -2,6 +2,7 @@ package github.nooblong.secondkill.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import github.nooblong.secondkill.entity.User;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
  * <p>
@@ -11,6 +12,7 @@ import github.nooblong.secondkill.entity.User;
  * @author nooblong
  * @since 2021-09-06
  */
+@Mapper
 public interface UserMapper extends BaseMapper<User> {
 
 }

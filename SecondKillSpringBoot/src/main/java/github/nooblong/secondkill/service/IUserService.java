@@ -2,6 +2,7 @@ package github.nooblong.secondkill.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import github.nooblong.secondkill.entity.User;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
  * <p>
