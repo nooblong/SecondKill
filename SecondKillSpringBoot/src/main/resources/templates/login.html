@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+</head>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script th:src="@{/md5.js}"></script>
+<body>
+<form>
+    <h2 style="text-align: center">Login</h2>
+    <div>
+        <label for="mobile"></label><input id="mobile" name="mobile" minlength="11"/>
+    </div>
+    <div>
+        <label for="password"></label><input id="password" name="password" minlength="11"/>
+    </div>
+    <div>
+        <button type="reset" onclick="reset()">reset</button>
+        <button onclick="login()">login</button>
+    </div>
+</form>
+</body>
+<script>
+    login = function () {
+        console.log("start login")
+        let inputPhone = $("#mobile").val()
+        let inputPass = $("#password").val()
+        let salt = "salt"
+        let str = inputPass + salt
+        let password = hex_md5(str)
+        console.log("password: " + password)
+        $.ajax({
+            url: "/login/doLogin",
+            type: "POST",
+            data: {
+                mobile: inputPhone,
+                password: password
+            },
+            success: function (data) {
+                if (data.code === 200) {
+                    alert("login successfully")
+                } else {
+                    alert(data.message)
+                }
+            },
+            error: function () {
+                alert("error")
+            }
+        })
+    }
+</script>
+</html>
