@@ -1,6 +1,10 @@
 package github.nooblong.secondkill.controller;
 
+import github.nooblong.secondkill.service.IUserService;
+import github.nooblong.secondkill.vo.LoginVo;
+import github.nooblong.secondkill.vo.RespBean;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -10,15 +14,19 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Slf4j
 public class LoginController {
 
+    @Autowired
+    IUserService userService;
+
     @RequestMapping("/toLogin")
-    public String toLogin(){
+    public String toLogin() {
         return "login";
     }
 
     @ResponseBody
     @RequestMapping("/doLogin")
-    public String doLogin(){
-        return "doLogin";
+    public RespBean doLogin(LoginVo loginVo) {
+        log.info("{}", loginVo.toString());
+        return userService.doLogin(loginVo);
     }
 
 }

@@ -1,5 +1,6 @@
 package github.nooblong.secondkill.entity;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -9,7 +10,7 @@ import java.util.Date;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author nooblong
@@ -21,6 +22,9 @@ import java.util.Date;
 public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    @TableId("id")
+    private String id;
 
     private String nickname;
 
