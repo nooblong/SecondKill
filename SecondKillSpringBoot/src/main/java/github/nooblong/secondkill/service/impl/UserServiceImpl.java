@@ -2,6 +2,7 @@ package github.nooblong.secondkill.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import github.nooblong.secondkill.entity.User;
+import github.nooblong.secondkill.exception.GlobalException;
 import github.nooblong.secondkill.mapper.UserMapper;
 import github.nooblong.secondkill.service.IUserService;
 import github.nooblong.secondkill.utils.MD5Util;
@@ -34,18 +35,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         String password = loginVo.getPassword();
         //用户名密码非空
         if (!StringUtils.hasText(mobile) || !StringUtils.hasText(password)){
-            return RespBean.error(RespBeanEnum.LOGIN_ERROR);
+            throw new GlobalException(RespBeanEnum.ERROR);
         }
         //查询数据库
         User user = userMapper.selectById(mobile);
         if (null == user){
-            return RespBean.error(RespBeanEnum.LOGIN_ERROR);
+            throw new GlobalException(RespBeanEnum.LOGIN_ERROR);
         }
         log.info(user.toString());
         log.info(MD5Util.formPassToDBPass(password, user.getSlat()));
         //加密后比较密码
         if (!MD5Util.formPassToDBPass(password, user.getSlat()).equals(user.getPassword())){
-            return RespBean.error(RespBeanEnum.LOGIN_ERROR);
+            throw new GlobalException(RespBeanEnum.PASSWORD_ERROR);
         }
         return RespBean.success();
     }

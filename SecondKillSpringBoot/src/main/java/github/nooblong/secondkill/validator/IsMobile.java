@@ -22,7 +22,7 @@ public @interface IsMobile {
 
     boolean required() default true;
 
-    String message() default "{javax.validation.constraints.isMobile}";
+    String message() default "check mobile format";
 
     Class<?>[] groups() default {};
 

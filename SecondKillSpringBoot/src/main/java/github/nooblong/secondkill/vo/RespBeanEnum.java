@@ -9,9 +9,13 @@ import lombok.ToString;
 @AllArgsConstructor
 public enum RespBeanEnum {
 
-    SUCCESS(200, "SUCCESS"),
-    ERROR(500,"服务器异常"),
-    LOGIN_ERROR(500210, "用户名或密码错误");
+    //global
+    SUCCESS(200, "success"),
+    ERROR(500,"server error"),
+    //login
+    LOGIN_ERROR(500210, "check username"),
+    PASSWORD_ERROR(500211, "check password"),
+    BIND_ERROR(500212, "check format");
 
 
     private final Integer code;
