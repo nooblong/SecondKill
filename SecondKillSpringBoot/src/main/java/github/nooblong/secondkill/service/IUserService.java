@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import github.nooblong.secondkill.entity.User;
 import github.nooblong.secondkill.vo.LoginVo;
 import github.nooblong.secondkill.vo.RespBean;
-import org.apache.ibatis.annotations.Mapper;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * <p>
@@ -15,5 +17,5 @@ import org.apache.ibatis.annotations.Mapper;
  * @since 2021-09-06
  */
 public interface IUserService extends IService<User> {
-    RespBean doLogin(LoginVo loginVo);
+    RespBean doLogin(LoginVo loginVo, HttpServletRequest request, HttpServletResponse response);
 }

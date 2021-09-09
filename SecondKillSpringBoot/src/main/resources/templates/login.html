@@ -7,8 +7,8 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script th:src="@{/md5.js}"></script>
 <body>
-<form>
-    <h2 style="text-align: center">Login</h2>
+<!--<form>-->
+    <h2>Login</h2>
     <div>
         <label for="mobile"></label><input id="mobile" name="mobile"/>
     </div>
@@ -19,7 +19,7 @@
         <button type="reset" onclick="reset()">reset</button>
         <button onclick="login()">login</button>
     </div>
-</form>
+<!--</form>-->
 </body>
 <script>
     login = function () {
@@ -40,6 +40,7 @@
             success: function (data) {
                 if (data.code === 200) {
                     alert("login successfully")
+                    window.location.href="/goods/toList"
                 } else {
                     alert(data.message)
                 }
