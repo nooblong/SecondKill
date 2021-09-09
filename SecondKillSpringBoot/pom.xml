@@ -54,6 +54,13 @@
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
+        <!--        验证-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+            <version>2.5.4</version>
+        </dependency>
+
         <!--        test-->
         <dependency>
             <groupId>org.springframework.boot</groupId>

@@ -36,7 +36,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         if (!StringUtils.hasText(mobile) || !StringUtils.hasText(password)){
             return RespBean.error(RespBeanEnum.LOGIN_ERROR);
         }
-        //TODO: 手机号校验
         //查询数据库
         User user = userMapper.selectById(mobile);
         if (null == user){
