@@ -13,6 +13,7 @@ import github.nooblong.secondkill.vo.RespBean;
 import github.nooblong.secondkill.vo.RespBeanEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -33,6 +34,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
 
     @Autowired
     UserMapper userMapper;
+    @Autowired
+    RedisTemplate<String, Object> redisTemplate;
 
     @Override
     public RespBean doLogin(LoginVo loginVo, HttpServletRequest request, HttpServletResponse response) {
@@ -55,8 +58,31 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IU
         }
         //生成cookie
         String ticket = UUIDUtil.uuid();
-        request.getSession().setAttribute(ticket, user);
+        //存入redis 格式：( key: user:<cookie> / value: User(Object Serializable) )
+        redisTemplate.opsForValue().set("user:" + ticket, user);
+//        request.getSession().setAttribute(ticket, user);
+        //放入cookie
         CookieUtil.setCookie(request, response, "userTicket", ticket);
         return RespBean.success();
+    }
+
+    /**
+     * 根据ticket从redis获取用户, 并放入cookie
+     *
+     * @param userTicket ticket
+     * @return 用户
+     */
+    @Override
+    public User getUserByCookie(String userTicket, HttpServletRequest request, HttpServletResponse response) {
+        if (!StringUtils.hasText(userTicket)) {
+            return null;
+        }
+        //根据cookie获取user对象
+        User user = (User) redisTemplate.opsForValue().get("user:" + userTicket);
+        //放入cookie
+        if (user != null) {
+            CookieUtil.setCookie(request, response, "userTicket", userTicket);
+        }
+        return user;
     }
 }
