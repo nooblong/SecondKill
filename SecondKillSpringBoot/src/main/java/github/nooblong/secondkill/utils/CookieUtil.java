@@ -12,6 +12,8 @@ import java.nio.charset.StandardCharsets;
 @Slf4j
 public class CookieUtil {
 
+    public static final String TICKET_NAME = "userTicket";
+
     /**
      * 得到cookie的值 no decode
      *
