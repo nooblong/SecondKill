@@ -13,6 +13,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+/**
+ * <p>
+ *  前端控制器
+ * </p>
+ *
+ * @author nooblong
+ * @since 2021-09-10
+ */
 @Controller
 @RequestMapping("/goods")
 public class GoodsController {

@@ -1,7 +1,7 @@
 package github.nooblong.secondkill.mapper;
 
-import github.nooblong.secondkill.entity.User;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import github.nooblong.secondkill.entity.SeckillGoods;
 
 /**
  * <p>
@@ -9,8 +9,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * </p>
  *
  * @author nooblong
- * @since 2021-09-06
+ * @since 2021-09-10
  */
-public interface UserMapper extends BaseMapper<User> {
+public interface SeckillGoodsMapper extends BaseMapper<SeckillGoods> {
 
 }

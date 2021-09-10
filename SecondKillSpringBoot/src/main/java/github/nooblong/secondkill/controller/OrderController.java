@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
  * </p>
  *
  * @author nooblong
- * @since 2021-09-06
+ * @since 2021-09-10
  */
 @RestController
-@RequestMapping("/secondkill/user")
-public class UserController {
+@RequestMapping("/secondkill/order")
+public class OrderController {
 
 }

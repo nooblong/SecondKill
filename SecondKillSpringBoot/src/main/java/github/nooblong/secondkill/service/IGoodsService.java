@@ -1,6 +1,6 @@
 package github.nooblong.secondkill.service;
 
-import github.nooblong.secondkill.entity.User;
+import github.nooblong.secondkill.entity.Goods;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -9,8 +9,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * </p>
  *
  * @author nooblong
- * @since 2021-09-06
+ * @since 2021-09-10
  */
-public interface IUserService extends IService<User> {
+public interface IGoodsService extends IService<Goods> {
 
 }
