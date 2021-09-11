@@ -25,7 +25,7 @@ public class SeckillGoods implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @TableId("id")
-    private String id;
+    private Long id;
 
     /**
      * 商品id
