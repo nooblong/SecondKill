@@ -1,8 +1,10 @@
 package github.nooblong.secondkill.controller;
 
 import github.nooblong.secondkill.entity.User;
+import github.nooblong.secondkill.service.IGoodsService;
 import github.nooblong.secondkill.service.IUserService;
 import github.nooblong.secondkill.utils.CookieUtil;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,7 +29,8 @@ public class GoodsController {
 
     @Autowired
     IUserService userService;
-
+    @Autowired
+    IGoodsService goodsService;
 //    @RequestMapping("/toList")
 //    public String toList(HttpServletRequest request, HttpServletResponse response,
 //                         Model model, @CookieValue(CookieUtil.TICKET_NAME) String ticket){
@@ -48,6 +51,7 @@ public class GoodsController {
     @RequestMapping("/toList")
     public String toList(Model model, User user){
         model.addAttribute("user", user);
+        model.addAttribute("goodsList", goodsService.findGoodsBo());
         return "goodsList";
     }
 }

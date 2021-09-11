@@ -2,9 +2,29 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>商品列表</title>
 </head>
 <body>
-<p th:text="${user.nickname}"></p>
+<h2>商品列表</h2>
+<table id="goodsList" border="5">
+    <tr>
+        <td>商品名称</td>
+        <td>商品图片</td>
+        <td>商品原价</td>
+        <td>商品库存</td>
+        <td>秒杀价</td>
+        <td>秒杀库存</td>
+        <td>详情</td>
+    </tr>
+    <tr th:each="good : ${goodsList}">
+        <td th:text="${good.goodsName}"></td>
+        <td><img style="height: 100px; width: 100px " src="" th:src="@{${good.goodsImg}}" alt=""></td>
+        <td th:text="${good.goodsPrice}"></td>
+        <td th:text="${good.goodsStock}"></td>
+        <td th:text="${good.seckillPrice}"></td>
+        <td th:text="${good.stockCount}"></td>
+        <td><a th:href="'/goods/toDetail/'+${good.id}">详情</a></td>
+    </tr>
+</table>
 </body>
 </html>

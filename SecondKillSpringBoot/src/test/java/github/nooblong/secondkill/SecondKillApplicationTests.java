@@ -3,6 +3,7 @@ package github.nooblong.secondkill;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import github.nooblong.secondkill.entity.User;
 import github.nooblong.secondkill.mapper.UserMapper;
+import github.nooblong.secondkill.service.IGoodsService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,6 +26,13 @@ class SecondKillApplicationTests {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.in("nickname", "test");
         System.out.println(userMapper.selectOne(queryWrapper));
+    }
+
+    @Autowired
+    IGoodsService goodsService;
+    @Test
+    void testGoodsBo(){
+        System.out.println(goodsService.findGoodsBo());
     }
 
 }
