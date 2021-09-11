@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>OrderDetail</title>
+</head>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<body>
+<table border="5">
+    <tr>
+        <td>商品名称</td>
+        <td th:text="${goods.goodsName}" colspan="3"></td>
+    </tr>
+    <tr>
+        <td>商品图片</td>
+        <td colspan="2"><img src="" th:src="@{${goods.goodsImg}}" alt=""></td>
+    </tr>
+    <tr>
+        <td>订单价格</td>
+        <td th:text="${order.goodsPerPrice}" colspan="2"></td>
+    </tr>
+    <tr>
+        <td>下单时间</td>
+        <td th:text="${#dates.format(order.createDate, 'yyyy-MM-dd HH:mm:ss')}" colspan="3"></td>
+    </tr>
+    <tr>
+        <td>订单状态</td>
+        <td>
+            <span th:if="${order.status eq 0}">未支付</span>
+            <span th:if="${order.status eq 1}">已支付</span>
+            <span th:if="${order.status eq 2}">已发货</span>
+            <span th:if="${order.status eq 3}">已收货</span>
+            <span th:if="${order.status eq 4}">已退款</span>
+            <span th:if="${order.status eq 5}">已完成</span>
+        </td>
+        <td>
+            <button style="height: 100%; width: 100%" type="submit" id="payButton">立即支付</button>
+        </td>
+    </tr>
+    <tr>
+        <td>收货人</td>
+        <td colspan="2">admin 18128900000</td>
+    </tr>
+    <tr>
+        <td>收货地址</td>
+        <td colspan="2">家</td>
+    </tr>
+</table>
+</body>
+</html>

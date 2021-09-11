@@ -1,7 +1,9 @@
 package github.nooblong.secondkill.service;
 
+import github.nooblong.secondkill.bo.GoodsBo;
 import github.nooblong.secondkill.entity.Order;
 import com.baomidou.mybatisplus.extension.service.IService;
+import github.nooblong.secondkill.entity.User;
 
 /**
  * <p>
@@ -13,4 +15,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface IOrderService extends IService<Order> {
 
+    Order addOrder(User user, GoodsBo goodsBo);
 }

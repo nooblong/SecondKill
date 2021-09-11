@@ -1,13 +1,20 @@
 package github.nooblong.secondkill;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import github.nooblong.secondkill.bo.GoodsBo;
+import github.nooblong.secondkill.entity.Order;
+import github.nooblong.secondkill.entity.SeckillGoods;
 import github.nooblong.secondkill.entity.User;
+import github.nooblong.secondkill.mapper.OrderMapper;
 import github.nooblong.secondkill.mapper.UserMapper;
 import github.nooblong.secondkill.service.IGoodsService;
+import github.nooblong.secondkill.service.ISeckillGoodsService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 
 @SpringBootTest
@@ -33,6 +40,33 @@ class SecondKillApplicationTests {
     @Test
     void testGoodsBo(){
         System.out.println(goodsService.findGoodsBo());
+    }
+
+    @Autowired
+    ISeckillGoodsService seckillGoodsService;
+    @Test
+    void test(){
+        GoodsBo goodsBo = new GoodsBo();
+        goodsBo.setId(3L);
+        SeckillGoods seckillGoods = seckillGoodsService.getOne(new QueryWrapper<SeckillGoods>()
+                .eq("goods_id", goodsBo.getId()));
+        System.out.println(seckillGoods);
+    }
+    @Autowired
+    OrderMapper orderMapper;
+    @Test
+    void addOrder(){
+        Order order = new Order();
+        order.setUserId(18128966990L);
+        order.setGoodsId(3L);
+        order.setDeliveryAddressId(0L);
+        order.setGoodsName("hsrnm");
+        order.setGoodsCount(1);
+        order.setGoodsPerPrice(BigDecimal.valueOf(6.5));
+        order.setOrderChannel(1);
+        order.setStatus(0);
+        order.setCreateDate(new Date());
+        orderMapper.insert(order);
     }
 
 }
