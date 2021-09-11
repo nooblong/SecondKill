@@ -24,4 +24,9 @@ public interface GoodsMapper extends BaseMapper<Goods> {
      */
     List<GoodsBo> findGoodsBo();
 
+    /**
+     * 获取单个商品
+     * @return Goods
+     */
+    GoodsBo findGoodsBoByGoodsId(Long goodsId);
 }
