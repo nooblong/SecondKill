@@ -34,7 +34,7 @@ public class SecKillController {
         model.addAttribute("user", user);
         GoodsBo goodsBo = goodsService.findGoodsBoByGoodsId(goodsId);
         //判断是否剩余库存
-        if (goodsBo.getGoodsStock() < 1) {
+        if (goodsBo.getStockCount() < 1) {
             model.addAttribute(model.addAttribute("errmsg", RespBeanEnum.EMPTY_STOCK.getMessage()));
             return "secKillFail";
         }

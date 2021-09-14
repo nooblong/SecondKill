@@ -9,6 +9,7 @@ import github.nooblong.secondkill.mapper.OrderMapper;
 import github.nooblong.secondkill.mapper.UserMapper;
 import github.nooblong.secondkill.service.IGoodsService;
 import github.nooblong.secondkill.service.ISeckillGoodsService;
+import github.nooblong.secondkill.utils.UserUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -67,6 +68,14 @@ class SecondKillApplicationTests {
         order.setStatus(0);
         order.setCreateDate(new Date());
         orderMapper.insert(order);
+    }
+
+    @Autowired
+    UserUtil userUtil;
+
+    @Test
+    void addUser() throws Exception {
+        userUtil.createUset(5000);
     }
 
 }

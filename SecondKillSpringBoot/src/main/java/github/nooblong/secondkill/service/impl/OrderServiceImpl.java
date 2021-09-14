@@ -11,6 +11,7 @@ import github.nooblong.secondkill.service.IOrderService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import github.nooblong.secondkill.service.ISeckillGoodsService;
 import github.nooblong.secondkill.service.ISeckillOrderService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,13 +19,14 @@ import java.util.Date;
 
 /**
  * <p>
- *  服务实现类
+ * 服务实现类
  * </p>
  *
  * @author nooblong
  * @since 2021-09-10
  */
 @Service
+@Slf4j
 public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements IOrderService {
 
     @Autowired
@@ -33,18 +35,22 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     OrderMapper orderMapper;
     @Autowired
     ISeckillOrderService seckillOrderService;
+
     /**
      * 增加订单
+     *
      * @param user
      * @param goodsBo
      * @return
      */
     @Override
-    public Order addOrder(User user, GoodsBo goodsBo) {
+    public synchronized Order addOrder(User user, GoodsBo goodsBo) {
         SeckillGoods seckillGoods = seckillGoodsService.getOne(new QueryWrapper<SeckillGoods>()
                 .eq("goods_id", goodsBo.getId()));
         //减库存
-        seckillGoods.setStockCount(seckillGoods.getStockCount()-1);
+        Integer stockCount = seckillGoods.getStockCount();
+        log.info("read stockCount: " + stockCount);
+        seckillGoods.setStockCount(stockCount - 1);
         seckillGoodsService.updateById(seckillGoods);
         //生成新订单
         Order order = new Order();
