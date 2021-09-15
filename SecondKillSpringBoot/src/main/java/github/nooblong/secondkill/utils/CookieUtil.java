@@ -70,7 +70,7 @@ public class CookieUtil {
         Cookie cookie = new Cookie(cookieName, cookieValue);
         if (null != request) {
             String domainName = getDomainName(request);
-            log.info("domainName: " + domainName);
+//            log.info("domainName: " + domainName);
             if (!"localhost".equals(domainName)) {
                 cookie.setDomain(domainName);
             }

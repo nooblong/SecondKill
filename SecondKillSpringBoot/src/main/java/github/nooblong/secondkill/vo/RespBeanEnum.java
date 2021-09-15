@@ -16,6 +16,7 @@ public enum RespBeanEnum {
     LOGIN_ERROR(500210, "check username"),
     PASSWORD_ERROR(500211, "check password"),
     BIND_ERROR(500212, "check format"),
+    YOUR_ERROR(500213, "your error"),
     //sec kill
     EMPTY_STOCK(500500, "empty stock"),
     TOO_MUCH(500501, "buy too much");
