@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Detail</title>
+</head>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<body>
+<h2>秒杀商品详情</h2>
+<span id="userTip">未登录</span>
+<span>没有收货地址</span>
+<table id="goods" border="5">
+    <tr>
+        <td>商品名称</td>
+        <td colspan="3" id="goodsName"></td>
+    </tr>
+    <tr>
+        <td>商品图片</td>
+        <td colspan="3"><img id="goodsImg" width="200" height="200" alt="" src=""></td>
+    </tr>
+    <tr>
+        <td>秒杀开始时间</td>
+        <td id="startTime"></td>
+        <td id="secKillTip"></td>
+    </tr>
+    <tr>
+        <td>商品原价</td>
+        <td colspan="3" id="goodsPrice"></td>
+    </tr>
+    <tr>
+        <td>秒杀价</td>
+        <td colspan="3" id="secKillPrice"></td>
+    </tr>
+    <tr>
+        <td>秒杀库存数量</td>
+        <td colspan="3" id="stockCount"></td>
+    </tr>
+    <tr>
+        <td colspan="3">
+            <form id="secKillForm" method="post" action="/secKill/doSecKill">
+                <input type="hidden" name="goodsId" id="goodsId">
+                <button type="submit" id="buyButton"
+                        style="width: 100%; height: 100%">立即购买
+                </button>
+            </form>
+        </td>
+    </tr>
+</table>
+</body>
+<script>
+
+    $(function () {
+        // countDown()
+        getDetails()
+    })
+
+    let getDetails = function () {
+        let goodsId = getQueryString("goodsId");
+        $.ajax({
+            url: '/goods/detail/' + goodsId,
+            type: 'GET',
+            success: function (data) {
+                if (data.code == 200) {
+                    render(data.obj)
+                    countDown()
+                } else {
+                    console.log("bad")
+                }
+            },
+            error: function () {
+                console.log("bad")
+            }
+        })
+    }
+
+    let remainSeconds0
+    let render = function (detail) {
+        let user = detail.user
+        let goods = detail.goodsBo
+        let remainSeconds = detail.remainSeconds
+        if (user) {
+            $("#userTip").hide()
+        }
+        $("#goodsName").text(goods.goodsName)
+        $("#goodsImg").attr("src", goods.goodsImg)
+        $("#startTime").text(goods.startDate)
+        // $("#remainSeconds").val(remainSeconds)
+        remainSeconds0 = remainSeconds
+        $("#goodsId").val(goods.id)
+        $("#goodsPrice").text(goods.goodsPrice)
+        $("#secKillPrice").text(goods.seckillPrice)
+        $("#stockCount").text(goods.stockCount)
+
+    }
+    let getQueryString = function (name) {
+        let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)")
+        let r = window.location.search.substr(1).match(reg)
+        if (r != null) return unescape(r[2])
+        return null
+
+    }
+    let countDown = function () {
+        let timeout;
+        if (remainSeconds0 > 0) {
+            $("#buyButton").attr("disabled", true)
+            $("#secKillTip").html("秒杀倒计时: " + remainSeconds0 + "s")
+            timeout = setTimeout(function () {
+                remainSeconds0--
+                $("#secKillTip").html("秒杀倒计时: " + remainSeconds0 + "s")
+                countDown()
+            }, 1000)
+        } else if (remainSeconds0 == 0) {
+            if (timeout) {
+                clearTimeout(timeout)
+            }
+            $("#secKillTip").html("秒杀进行中")
+            $("#buyButton").attr("disabled", false)
+        } else {
+            $("#secKillTip").html("秒杀已结束")
+            $("#buyButton").attr("disabled", true)
+        }
+    }
+
+    function dateFormat(fmt, date) {
+        let ret;
+        const opt = {
+            "Y+": date.getFullYear().toString(),        // 年
+            "m+": (date.getMonth() + 1).toString(),     // 月
+            "d+": date.getDate().toString(),            // 日
+            "H+": date.getHours().toString(),           // 时
+            "M+": date.getMinutes().toString(),         // 分
+            "S+": date.getSeconds().toString()          // 秒
+        };
+        for (let k in opt) {
+            ret = new RegExp("(" + k + ")").exec(fmt);
+            if (ret) {
+                fmt = fmt.replace(ret[1], (ret[1].length == 1) ? (opt[k]) : (opt[k].padStart(ret[1].length, "0")))
+            }
+        }
+        return fmt;
+    }
+</script>
+</html>

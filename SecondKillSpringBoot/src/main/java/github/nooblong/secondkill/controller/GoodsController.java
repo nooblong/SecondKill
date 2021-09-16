@@ -5,6 +5,8 @@ import github.nooblong.secondkill.entity.User;
 import github.nooblong.secondkill.service.IGoodsService;
 import github.nooblong.secondkill.service.IUserService;
 import github.nooblong.secondkill.utils.CookieUtil;
+import github.nooblong.secondkill.vo.DetailVo;
+import github.nooblong.secondkill.vo.RespBean;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -82,19 +84,20 @@ public class GoodsController {
         return html;
     }
 
-    @RequestMapping(value = "/toDetail/{goodsId}", produces = "text/html;charset=utf-8")
+//    @RequestMapping(value = "/toDetail/{goodsId}", produces = "text/html;charset=utf-8")
+    @RequestMapping(value = "/detail/{goodsId}")
     @ResponseBody
-    public String toDetail(@PathVariable Long goodsId, Model model, User user,
+    public RespBean toDetail(@PathVariable Long goodsId, Model model, User user,
                            HttpServletRequest request, HttpServletResponse response){
-        //从redis获取页面
-        ValueOperations valueOperations = redisTemplate.opsForValue();
-        String html = (String)valueOperations.get("goodsDetails:" + goodsId);
-        if (StringUtils.hasText(html)){
-            return html;
-        }
-
-        model.addAttribute("user", user);
+//        //从redis获取页面
+//        ValueOperations valueOperations = redisTemplate.opsForValue();
+//        String html = (String)valueOperations.get("goodsDetails:" + goodsId);
+//        if (StringUtils.hasText(html)){
+//            return html;
+//        }
+//        model.addAttribute("user", user);
         GoodsBo goodsBo = goodsService.findGoodsBoByGoodsId(goodsId);
+        //剩余时间
         Date startDate = goodsBo.getStartDate();
         Date endDate = goodsBo.getEndDate();
         Date nowDate = new Date();
@@ -110,15 +113,22 @@ public class GoodsController {
             secKillStatus = 1;
             remainSeconds = 0;
         }
-        model.addAttribute("goods", goodsBo);
-        model.addAttribute("secKillStatus", secKillStatus);
-        model.addAttribute("remainSeconds", remainSeconds);
-        //手动生成html
-        WebContext webContext = new WebContext(request, response, request.getServletContext(), request.getLocale(), model.asMap());
-        html = thymeleafViewResolver.getTemplateEngine().process("goodsDetail", webContext);
-        if (StringUtils.hasText(html)){
-            valueOperations.set("goodsDetails:"+goodsBo.getId(), html, 60, TimeUnit.SECONDS);
-        }
-        return html;
+        DetailVo detailVo = new DetailVo();
+        detailVo.setUser(user);
+        detailVo.setGoodsBo(goodsBo);
+        detailVo.setSecKillStatus(secKillStatus);
+        detailVo.setRemainSeconds(remainSeconds);
+
+//        model.addAttribute("goods", goodsBo);
+//        model.addAttribute("secKillStatus", secKillStatus);
+//        model.addAttribute("remainSeconds", remainSeconds);
+//        //手动生成html
+//        WebContext webContext = new WebContext(request, response, request.getServletContext(), request.getLocale(), model.asMap());
+//        html = thymeleafViewResolver.getTemplateEngine().process("goodsDetail", webContext);
+//        if (StringUtils.hasText(html)){
+//            valueOperations.set("goodsDetails:"+goodsBo.getId(), html, 60, TimeUnit.SECONDS);
+//        }
+//        return html;
+        return RespBean.success(detailVo);
     }
 }
