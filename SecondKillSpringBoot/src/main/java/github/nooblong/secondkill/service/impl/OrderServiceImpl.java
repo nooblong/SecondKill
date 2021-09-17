@@ -6,11 +6,15 @@ import github.nooblong.secondkill.entity.Order;
 import github.nooblong.secondkill.entity.SeckillGoods;
 import github.nooblong.secondkill.entity.SeckillOrder;
 import github.nooblong.secondkill.entity.User;
+import github.nooblong.secondkill.exception.GlobalException;
 import github.nooblong.secondkill.mapper.OrderMapper;
+import github.nooblong.secondkill.service.IGoodsService;
 import github.nooblong.secondkill.service.IOrderService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import github.nooblong.secondkill.service.ISeckillGoodsService;
 import github.nooblong.secondkill.service.ISeckillOrderService;
+import github.nooblong.secondkill.vo.OrderDetailVo;
+import github.nooblong.secondkill.vo.RespBeanEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,6 +39,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
     OrderMapper orderMapper;
     @Autowired
     ISeckillOrderService seckillOrderService;
+    @Autowired
+    IGoodsService goodsService;
 
     /**
      * 增加订单
@@ -71,5 +77,18 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         seckillOrder.setGoodsId(goodsBo.getId());
         seckillOrderService.save(seckillOrder);
         return order;
+    }
+
+    @Override
+    public OrderDetailVo detail(Long orderId) {
+        if (orderId == null){
+            throw new GlobalException(RespBeanEnum.ORDER_NOT_EXIST);
+        }
+        Order order = orderMapper.selectById(orderId);
+        GoodsBo goodsBoByGoodsId = goodsService.findGoodsBoByGoodsId(order.getGoodsId());
+        OrderDetailVo orderDetailVo = new OrderDetailVo();
+        orderDetailVo.setOrder(order);
+        orderDetailVo.setGoodsBo(goodsBoByGoodsId);
+        return orderDetailVo;
     }
 }

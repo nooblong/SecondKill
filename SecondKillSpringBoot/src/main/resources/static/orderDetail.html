@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OrderDetail</title>
+</head>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<body>
+<table border="5">
+    <tr>
+        <td>商品名称</td>
+        <td id="goodsName" colspan="3"></td>
+    </tr>
+    <tr>
+        <td>商品图片</td>
+        <td colspan="2"><img id="goodsImg" alt="" src=""></td>
+    </tr>
+    <tr>
+        <td>订单价格</td>
+        <td id="goodsPrice" colspan="2"></td>
+    </tr>
+    <tr>
+        <td>下单时间</td>
+        <td id="createDate" colspan="3"></td>
+    </tr>
+    <tr>
+        <td>订单状态</td>
+        <td id="status">
+<!--            <span th:if="${order.status eq 0}">未支付</span>-->
+<!--            <span th:if="${order.status eq 1}">已支付</span>-->
+<!--            <span th:if="${order.status eq 2}">已发货</span>-->
+<!--            <span th:if="${order.status eq 3}">已收货</span>-->
+<!--            <span th:if="${order.status eq 4}">已退款</span>-->
+<!--            <span th:if="${order.status eq 5}">已完成</span>-->
+        </td>
+        <td>
+            <button style="height: 100%; width: 100%" type="submit" id="payButton">立即支付</button>
+        </td>
+    </tr>
+    <tr>
+        <td>收货人</td>
+        <td colspan="2">admin 18128900000</td>
+    </tr>
+    <tr>
+        <td>收货地址</td>
+        <td colspan="2">家</td>
+    </tr>
+</table>
+</body>
+<script>
+    $(function (){
+        getOrderDetail()
+    })
+
+    let getOrderDetail = function (){
+        let orderId = getQueryString("orderId")
+        $.ajax({
+            url: '/order/detail',
+            type: 'GET',
+            data: {
+                orderId: orderId
+            },
+            success: function (data){
+                if (data.code == 200){
+                    render(data.obj)
+                } else {
+                    console.log(data.message)
+                }
+            },
+            error: function (){
+                console.log("bad")
+            }
+        })
+    }
+
+    let render = function (detail) {
+        let goods = detail.goodsBo
+        let order = detail.order
+        $("#goodsName").text(goods.goodsName)
+        $("#goodsImg").attr("src", goods.goodsImg)
+        $("#goodsPrice").text(order.goodsPerPrice)
+        $("#createDate").text(order.createDate)
+        let status = order.status
+        let statusText = ""
+        switch (status){
+            case 0:
+                statusText = "未支付";break;
+            case 1:
+                statusText = "已支付";break;
+            case 2:
+                statusText = "已发货";break;
+            case 3:
+                statusText = "已收货";break;
+            case 4:
+                statusText = "已退款";break;
+            case 5:
+                statusText = "已完成";break;
+        }
+        $("#status").text(statusText)
+    }
+
+    let getQueryString = function (name) {
+        let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)")
+        let r = window.location.search.substr(1).match(reg)
+        if (r != null) return unescape(r[2])
+        return null
+    }
+</script>
+</html>

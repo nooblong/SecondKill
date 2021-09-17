@@ -19,7 +19,9 @@ public enum RespBeanEnum {
     YOUR_ERROR(500213, "your error"),
     //sec kill
     EMPTY_STOCK(500500, "empty stock"),
-    TOO_MUCH(500501, "buy too much");
+    TOO_MUCH(500501, "buy too much"),
+    //order
+    ORDER_NOT_EXIST(500600, "order not exist");
 
     private final Integer code;
     private final String message;
