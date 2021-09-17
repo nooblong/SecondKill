@@ -11,6 +11,7 @@ import github.nooblong.secondkill.service.ISeckillOrderService;
 import github.nooblong.secondkill.vo.RespBean;
 import github.nooblong.secondkill.vo.RespBeanEnum;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,6 +28,8 @@ public class SecKillController {
     ISeckillOrderService seckillOrderService;
     @Autowired
     IOrderService orderService;
+    @Autowired
+    RedisTemplate redisTemplate;
 
     @ResponseBody
     @RequestMapping(value = "/doSecKill", method = RequestMethod.POST)
@@ -43,9 +46,10 @@ public class SecKillController {
             return RespBean.error(RespBeanEnum.EMPTY_STOCK);
         }
         //判断是否重复抢购
-        SeckillOrder seckillOrder = seckillOrderService.getOne(new QueryWrapper<SeckillOrder>()
-                .eq("user_id", user.getId())
-                .eq("goods_id", goodsId));
+        SeckillOrder seckillOrder = (SeckillOrder) redisTemplate.opsForValue().get("order:" + user.getId() + ":" + goodsId);
+//        SeckillOrder seckillOrder = seckillOrderService.getOne(new QueryWrapper<SeckillOrder>()
+//                .eq("user_id", user.getId())
+//                .eq("goods_id", goodsId));
         if (seckillOrder != null){
 //            model.addAttribute("errmsg", RespBeanEnum.TOO_MUCH.getMessage());
             return RespBean.error(RespBeanEnum.TOO_MUCH);

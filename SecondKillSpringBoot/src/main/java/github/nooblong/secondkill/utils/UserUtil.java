@@ -34,9 +34,9 @@ public class UserUtil {
             user.setLoginCount(1);
             users.add(user);
         }
-        for (User user : users) {
-            userMapper.insert(user);
-        }
+//        for (User user : users) {
+//            userMapper.insert(user);
+//        }
         String urlString = "http://localhost:8080/login/doLogin";
         File file = new File("C:/Users/lyl/Desktop/config.txt");
         if (file.exists())
