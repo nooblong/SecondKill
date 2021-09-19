@@ -65,6 +65,8 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
                "stock_count = stock_count-1").eq("goods_id", goodsBo.getId())
                .gt("stock_count", 0));
         if (!seckillResult){
+            //判断是否还有库存
+            redisTemplate.opsForValue().set("isStockEmpty:" + goodsBo.getId(), "0");
             return null;
         }
 //        seckillGoodsService.updateById(seckillGoods);

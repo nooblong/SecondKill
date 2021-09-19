@@ -130,7 +130,10 @@
             },
             success: function (data){
                 if (data.code == 200){
-                    window.location.href = "/orderDetail.html?orderId=" + data.obj.id
+                    // window.location.href = "/orderDetail.html?orderId=" + data.obj.id
+                    getResult($("#goodsId").val())
+                } else if (data.code == 200001) {
+                    getResult($("#goodsId").val())
                 } else {
                     console.log(data.message)
                 }
@@ -140,24 +143,35 @@
             }
         })
     }
-
-    function dateFormat(fmt, date) {
-        let ret;
-        const opt = {
-            "Y+": date.getFullYear().toString(),        // 年
-            "m+": (date.getMonth() + 1).toString(),     // 月
-            "d+": date.getDate().toString(),            // 日
-            "H+": date.getHours().toString(),           // 时
-            "M+": date.getMinutes().toString(),         // 分
-            "S+": date.getSeconds().toString()          // 秒
-        };
-        for (let k in opt) {
-            ret = new RegExp("(" + k + ")").exec(fmt);
-            if (ret) {
-                fmt = fmt.replace(ret[1], (ret[1].length == 1) ? (opt[k]) : (opt[k].padStart(ret[1].length, "0")))
+    
+    let getResult = function (goodsId) {
+        $.ajax({
+            url: "/secKill/result",
+            type: "GET",
+            data: {
+                goodsId: goodsId
+            },
+            success: function (data){
+                if (data.code == 200){
+                    let result = data.obj;
+                    if (result < 0){
+                        alert("result < 0")
+                    } else if (result == 0){
+                        console.log("result = 0")
+                        setTimeout(function (){
+                            getResult(goodsId)
+                        }, 1000)
+                    } else {
+                        alert("seckill success")
+                        window.location.href = "/orderDetail.html?orderId=" + result
+                    }
+                }
+            },
+            error: function (){
+                console.log("error")
             }
-        }
-        return fmt;
+        })
     }
+    
 </script>
 </html>

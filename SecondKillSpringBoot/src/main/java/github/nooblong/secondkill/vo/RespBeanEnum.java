@@ -20,6 +20,7 @@ public enum RespBeanEnum {
     //sec kill
     EMPTY_STOCK(500500, "empty stock"),
     TOO_MUCH(500501, "buy too much"),
+    WAIT(200001, "wait for result"),
     //order
     ORDER_NOT_EXIST(500600, "order not exist");
 
