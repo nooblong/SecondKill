@@ -14,14 +14,18 @@ import github.nooblong.secondkill.service.IOrderService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import github.nooblong.secondkill.service.ISeckillGoodsService;
 import github.nooblong.secondkill.service.ISeckillOrderService;
+import github.nooblong.secondkill.utils.MD5Util;
+import github.nooblong.secondkill.utils.UUIDUtil;
 import github.nooblong.secondkill.vo.OrderDetailVo;
 import github.nooblong.secondkill.vo.RespBeanEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -61,10 +65,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
 //        Integer stockCount = seckillGoods.getStockCount();
 //        log.info("read stockCount: " + stockCount);
 //        seckillGoods.setStockCount(stockCount - 1);
-       boolean seckillResult = seckillGoodsService.update(new UpdateWrapper<SeckillGoods>().setSql(
-               "stock_count = stock_count-1").eq("goods_id", goodsBo.getId())
-               .gt("stock_count", 0));
-        if (!seckillResult){
+        boolean seckillResult = seckillGoodsService.update(new UpdateWrapper<SeckillGoods>().setSql(
+                        "stock_count = stock_count-1").eq("goods_id", goodsBo.getId())
+                .gt("stock_count", 0));
+        if (!seckillResult) {
             //判断是否还有库存
             redisTemplate.opsForValue().set("isStockEmpty:" + goodsBo.getId(), "0");
             return null;
@@ -89,13 +93,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         seckillOrder.setGoodsId(goodsBo.getId());
         seckillOrderService.save(seckillOrder);
         //存入redis
-        redisTemplate.opsForValue().set("order:"+user.getId()+":"+goodsBo.getId(), seckillOrder);
+        redisTemplate.opsForValue().set("order:" + user.getId() + ":" + goodsBo.getId(), seckillOrder);
         return order;
     }
 
     @Override
     public OrderDetailVo detail(Long orderId) {
-        if (orderId == null){
+        if (orderId == null) {
             throw new GlobalException(RespBeanEnum.ORDER_NOT_EXIST);
         }
         Order order = orderMapper.selectById(orderId);
@@ -104,5 +108,54 @@ public class OrderServiceImpl extends ServiceImpl<OrderMapper, Order> implements
         orderDetailVo.setOrder(order);
         orderDetailVo.setGoodsBo(goodsBoByGoodsId);
         return orderDetailVo;
+    }
+
+    /**
+     * 获取秒杀地址
+     *
+     * @param user
+     * @param goodsId
+     * @return
+     */
+    @Override
+    public String createPath(User user, Long goodsId) {
+        String s = MD5Util.md5(UUIDUtil.uuid() + "123456");
+        redisTemplate.opsForValue().set("seckillPath:" + user.getId() + ":" + goodsId,
+                s, 60, TimeUnit.SECONDS);
+        return s;
+    }
+
+    /**
+     * 校验秒杀地址
+     *
+     * @param user
+     * @param goodsId
+     * @param path
+     * @return
+     */
+    @Override
+    public boolean checkPath(User user, Long goodsId, String path) {
+        if (user == null || goodsId < 0 || !StringUtils.hasText(path)) {
+            return false;
+        }
+        String redisPath = (String) redisTemplate.opsForValue().get("seckillPath:" + user.getId() + ":" + goodsId);
+        return path.equals(redisPath);
+    }
+
+    /**
+     * 校验验证码
+     *
+     * @param user
+     * @param goodsId
+     * @param captcha
+     * @return
+     */
+    @Override
+    public boolean checkCaptcha(User user, Long goodsId, String captcha) {
+        if (!StringUtils.hasText(captcha) || user == null || goodsId < 0){
+            return false;
+        }
+        String s = (String) redisTemplate.opsForValue().get("captcha:" + user.getId() + ":" + goodsId);
+        return captcha.equals(s);
     }
 }

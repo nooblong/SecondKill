@@ -13,6 +13,8 @@ import github.nooblong.secondkill.utils.UserUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 
 import java.math.BigDecimal;
 import java.util.Date;
@@ -76,6 +78,14 @@ class SecondKillApplicationTests {
     @Test
     void addUser() throws Exception {
         userUtil.createUset(5000);
+    }
+
+    @Autowired
+    RedisTemplate redisTemplate;
+
+    @Test
+    void testlock(){
+        ValueOperations valueOperations = redisTemplate.opsForValue();
     }
 
 }

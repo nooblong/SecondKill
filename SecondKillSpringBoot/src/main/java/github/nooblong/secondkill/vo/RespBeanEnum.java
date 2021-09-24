@@ -21,6 +21,8 @@ public enum RespBeanEnum {
     EMPTY_STOCK(500500, "empty stock"),
     TOO_MUCH(500501, "buy too much"),
     WAIT(200001, "wait for result"),
+    BAD_PATH(500502, "bad path"),
+    BAD_CAPTCHA(500503, "bad captcha"),
     //order
     ORDER_NOT_EXIST(500600, "order not exist");
 

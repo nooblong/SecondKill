@@ -38,8 +38,13 @@
     <tr>
         <td colspan="3">
             <form id="secKillForm">
-                <button type="button" id="buyButton" onclick="doSecKill()"
-                style="width: 100%; height: 100%">立即购买
+                <img id="captchaImg" width="130" height="32" onclick="function refreshCaptcha() {
+                    $('#captchaImg').attr('src', '/seckill/captcha?goodsId='+$('#goodsId').val() + '&time='+new Date())
+                }
+                refreshCaptcha()" alt="" src=""/>
+                <input id="captcha">
+                <button type="button" id="buyButton" onclick="getSeckillPath()"
+                        style="width: 100%; height: 100%">立即购买
                     <input type="hidden" name="goodsId" id="goodsId">
                 </button>
             </form>
@@ -53,6 +58,30 @@
         // countDown()
         getDetails()
     })
+
+    let getSeckillPath = function () {
+        let goodsId = $("#goodsId").val()
+        let captche = $("#captcha").val()
+        $.ajax({
+            url: "/secKill/path",
+            type: "GET",
+            data: {
+                goodsId: goodsId,
+                captche: captche
+            },
+            success: function (data) {
+                if (data.code == 200) {
+                    let path = data.obj
+                    doSecKill(path)
+                } else {
+                    console.log(data.message)
+                }
+            },
+            error: function () {
+                console.log("error")
+            }
+        })
+    }
 
     let getDetails = function () {
         let goodsId = getQueryString("goodsId");
@@ -115,21 +144,26 @@
             }
             $("#secKillTip").html("秒杀进行中")
             $("#buyButton").attr("disabled", false)
+            refreshCaptcha()
+            $("#captchaImg").show()
+            $("#captcha").show()
         } else {
             $("#secKillTip").html("秒杀已结束")
             $("#buyButton").attr("disabled", true)
+            $("#captchaImg").hide()
+            $("#captcha").hide()
         }
     }
 
-    let doSecKill = function () {
+    let doSecKill = function (path) {
         $.ajax({
-            url: '/secKill/doSecKill',
+            url: '/secKill/' + path + '/doSecKill',
             type: 'POST',
-            data:{
+            data: {
                 goodsId: $("#goodsId").val()
             },
-            success: function (data){
-                if (data.code == 200){
+            success: function (data) {
+                if (data.code == 200) {
                     // window.location.href = "/orderDetail.html?orderId=" + data.obj.id
                     getResult($("#goodsId").val())
                 } else if (data.code == 200001) {
@@ -138,12 +172,12 @@
                     console.log(data.message)
                 }
             },
-            error: function (){
+            error: function () {
                 console.log("bad")
             }
         })
     }
-    
+
     let getResult = function (goodsId) {
         $.ajax({
             url: "/secKill/result",
@@ -151,14 +185,14 @@
             data: {
                 goodsId: goodsId
             },
-            success: function (data){
-                if (data.code == 200){
+            success: function (data) {
+                if (data.code == 200) {
                     let result = data.obj;
-                    if (result < 0){
+                    if (result < 0) {
                         alert("result < 0")
-                    } else if (result == 0){
+                    } else if (result == 0) {
                         console.log("result = 0")
-                        setTimeout(function (){
+                        setTimeout(function () {
                             getResult(goodsId)
                         }, 1000)
                     } else {
@@ -167,11 +201,11 @@
                     }
                 }
             },
-            error: function (){
+            error: function () {
                 console.log("error")
             }
         })
     }
-    
+
 </script>
 </html>
