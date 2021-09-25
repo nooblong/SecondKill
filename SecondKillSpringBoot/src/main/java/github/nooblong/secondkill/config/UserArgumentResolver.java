@@ -33,7 +33,7 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
     }
 
     /**
-     * 从request获取ticket，查询redis，返回user对象
+     * 从thread local获取user
      * @return User对象
      */
     @Override
@@ -42,14 +42,7 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
             throws Exception {
         HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
         HttpServletResponse response = webRequest.getNativeResponse(HttpServletResponse.class);
-        //从request获取ticket
-        String ticket = CookieUtil.getCookieValue(request, CookieUtil.TICKET_NAME);
-        if (!StringUtils.hasText(ticket)) {
-            return null;
-        }
-        //从redis获取user
-        User user = userService.getUserByCookie(ticket, request, response);
-        log.info("当前用户: {}, ticket: {}", user.getNickname(), ticket);
-        return user;
+        //从thread local获取user
+        return UserContext.getUser();
     }
 }

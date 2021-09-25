@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wf.captcha.ArithmeticCaptcha;
 import github.nooblong.secondkill.bo.GoodsBo;
 import github.nooblong.secondkill.bo.SeckillMessage;
+import github.nooblong.secondkill.config.AccessLimit;
 import github.nooblong.secondkill.entity.Order;
 import github.nooblong.secondkill.entity.SeckillOrder;
 import github.nooblong.secondkill.entity.User;
@@ -135,21 +136,8 @@ public class SecKillController implements InitializingBean {
      */
     @RequestMapping(value = "/path", method = RequestMethod.GET)
     @ResponseBody
+    @AccessLimit(second=100,maxCount=100)
     public RespBean getPath(User user, Long goodsId, String captcha, HttpServletRequest request) {
-        if (user == null) {
-            return RespBean.error(RespBeanEnum.LOGIN_ERROR);
-        }
-        ValueOperations valueOperations = redisTemplate.opsForValue();
-        //限制访问次数
-        String uri = request.getRequestURI();
-        Integer count = (Integer) valueOperations.get(uri + ":" + user.getId());
-        if (count == null) {
-            valueOperations.set(uri + ":" + user.getId(), 1, 5, TimeUnit.SECONDS);
-        } else if (count < 5){
-            valueOperations.increment(uri + ":" + user.getId());
-        } else {
-            return RespBean.error(RespBeanEnum.ACCESS_TOO_MUCH);
-        }
         //校验验证码
         boolean check = orderService.checkCaptcha(user, goodsId, captcha);
         if (!check) {
