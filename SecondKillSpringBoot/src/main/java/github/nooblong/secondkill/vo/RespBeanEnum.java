@@ -23,6 +23,7 @@ public enum RespBeanEnum {
     WAIT(200001, "wait for result"),
     BAD_PATH(500502, "bad path"),
     BAD_CAPTCHA(500503, "bad captcha"),
+    ACCESS_TOO_MUCH(500504, "too much access"),
     //order
     ORDER_NOT_EXIST(500600, "order not exist");
 

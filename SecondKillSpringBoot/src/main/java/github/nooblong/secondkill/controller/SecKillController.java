@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Collections;
@@ -66,8 +67,8 @@ public class SecKillController implements InitializingBean {
             return RespBean.error(RespBeanEnum.LOGIN_ERROR);
         }
         //判断路径
-        boolean check = orderService.checkPath(user,goodsId, path);
-        if (!check){
+        boolean check = orderService.checkPath(user, goodsId, path);
+        if (!check) {
             return RespBean.error(RespBeanEnum.BAD_PATH);
         }
 
@@ -81,11 +82,11 @@ public class SecKillController implements InitializingBean {
 ////        SeckillOrder seckillOrder = seckillOrderService.getOne(new QueryWrapper<SeckillOrder>()
 ////                .eq("user_id", user.getId())
 ////                .eq("goods_id", goodsId));
-        if (seckillOrder != null){
+        if (seckillOrder != null) {
             return RespBean.error(RespBeanEnum.TOO_MUCH);
         }
         //内存标记减少redis访问
-        if (emptyStockMap.get(goodsId)){
+        if (emptyStockMap.get(goodsId)) {
             return RespBean.error(RespBeanEnum.TOO_MUCH);
         }
         ValueOperations valueOperations = redisTemplate.opsForValue();
@@ -93,7 +94,7 @@ public class SecKillController implements InitializingBean {
 //        Long stock = valueOperations.decrement("seckillGoods:" + goodsId);
         Long stock = (Long) redisTemplate.execute(redisScript,
                 Collections.singletonList("seckillGoods:" + goodsId), Collections.EMPTY_LIST);
-        if (stock < 0){
+        if (stock < 0) {
             emptyStockMap.put(goodsId, true);
             valueOperations.increment("seckillGoods:" + goodsId);
             return RespBean.error(RespBeanEnum.EMPTY_STOCK);
@@ -110,14 +111,15 @@ public class SecKillController implements InitializingBean {
 
     /**
      * 查询秒杀结果
+     *
      * @param user
      * @param goodsId
      * @return orderId:success, 0:wait, -1:fail
      */
     @RequestMapping(value = "/result", method = RequestMethod.GET)
     @ResponseBody
-    public RespBean getResult(User user, Long goodsId){
-        if (user == null){
+    public RespBean getResult(User user, Long goodsId) {
+        if (user == null) {
             return RespBean.error(RespBeanEnum.LOGIN_ERROR);
         }
         Long orderId = seckillOrderService.getResult(user, goodsId);
@@ -126,19 +128,31 @@ public class SecKillController implements InitializingBean {
 
     /**
      * 获取秒杀地址
+     *
      * @param user
      * @param goodsId
      * @return
      */
     @RequestMapping(value = "/path", method = RequestMethod.GET)
     @ResponseBody
-    public RespBean getPath(User user, Long goodsId, String captcha){
-        if (user == null){
+    public RespBean getPath(User user, Long goodsId, String captcha, HttpServletRequest request) {
+        if (user == null) {
             return RespBean.error(RespBeanEnum.LOGIN_ERROR);
+        }
+        ValueOperations valueOperations = redisTemplate.opsForValue();
+        //限制访问次数
+        String uri = request.getRequestURI();
+        Integer count = (Integer) valueOperations.get(uri + ":" + user.getId());
+        if (count == null) {
+            valueOperations.set(uri + ":" + user.getId(), 1, 5, TimeUnit.SECONDS);
+        } else if (count < 5){
+            valueOperations.increment(uri + ":" + user.getId());
+        } else {
+            return RespBean.error(RespBeanEnum.ACCESS_TOO_MUCH);
         }
         //校验验证码
         boolean check = orderService.checkCaptcha(user, goodsId, captcha);
-        if (!check){
+        if (!check) {
             return RespBean.error(RespBeanEnum.BAD_CAPTCHA);
         }
         //生成路径
@@ -147,18 +161,18 @@ public class SecKillController implements InitializingBean {
     }
 
     @RequestMapping(value = "/verify", method = RequestMethod.GET)
-    public void verifyCode(User user, Long goodsId, HttpServletResponse response){
-        if (user == null){
+    public void verifyCode(User user, Long goodsId, HttpServletResponse response) {
+        if (user == null) {
             throw new GlobalException(RespBeanEnum.LOGIN_ERROR);
         }
         //设置图片类型
         response.setContentType("image/jpg");
-        response.setHeader("Pargam", "nocache");
+        response.setHeader("Pragma", "No-cache");
         response.setDateHeader("Expires", 0);
         //放入redis
         ArithmeticCaptcha arithmeticCaptcha = new ArithmeticCaptcha(130, 32, 3);
-        redisTemplate.opsForValue().set("captcha:"+user.getId()+":"+goodsId,
-                arithmeticCaptcha, 300, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set("captcha:" + user.getId() + ":" + goodsId,
+                arithmeticCaptcha.text(), 300, TimeUnit.SECONDS);
         try {
             arithmeticCaptcha.out(response.getOutputStream());
         } catch (IOException e) {
@@ -168,17 +182,18 @@ public class SecKillController implements InitializingBean {
 
     /**
      * 初始化库存到redis
+     *
      * @throws Exception
      */
     @Override
     public void afterPropertiesSet() throws Exception {
         List<GoodsBo> list = goodsService.findGoodsBo();
-        if (CollectionUtils.isEmpty(list)){
+        if (CollectionUtils.isEmpty(list)) {
             return;
         }
         list.forEach(goodsBo -> {
-                redisTemplate.opsForValue().set("seckillGoods:" + goodsBo.getId(), goodsBo.getStockCount());
-                emptyStockMap.put(goodsBo.getId(), false);
+            redisTemplate.opsForValue().set("seckillGoods:" + goodsBo.getId(), goodsBo.getStockCount());
+            emptyStockMap.put(goodsBo.getId(), false);
         });
     }
 }

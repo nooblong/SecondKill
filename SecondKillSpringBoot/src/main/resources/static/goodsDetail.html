@@ -39,7 +39,7 @@
         <td colspan="3">
             <form id="secKillForm">
                 <img id="captchaImg" width="130" height="32" onclick="function refreshCaptcha() {
-                    $('#captchaImg').attr('src', '/seckill/captcha?goodsId='+$('#goodsId').val() + '&time='+new Date())
+                    $('#captchaImg').attr('src', '/secKill/verify?goodsId='+$('#goodsId').val() + '&time='+new Date())
                 }
                 refreshCaptcha()" alt="" src=""/>
                 <input id="captcha">
@@ -57,17 +57,19 @@
     $(function () {
         // countDown()
         getDetails()
+        $("#captchaImg").hide()
+        $("#captcha").hide()
     })
 
     let getSeckillPath = function () {
         let goodsId = $("#goodsId").val()
-        let captche = $("#captcha").val()
+        let captcha = $("#captcha").val()
         $.ajax({
             url: "/secKill/path",
             type: "GET",
             data: {
                 goodsId: goodsId,
-                captche: captche
+                captcha: captcha
             },
             success: function (data) {
                 if (data.code == 200) {
@@ -119,7 +121,7 @@
         $("#goodsPrice").text(goods.goodsPrice)
         $("#secKillPrice").text(goods.seckillPrice)
         $("#stockCount").text(goods.stockCount)
-
+        $('#captchaImg').attr('src', '/secKill/verify?goodsId='+goods.id + '&time='+new Date())
     }
     let getQueryString = function (name) {
         let reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)")
@@ -144,7 +146,6 @@
             }
             $("#secKillTip").html("秒杀进行中")
             $("#buyButton").attr("disabled", false)
-            refreshCaptcha()
             $("#captchaImg").show()
             $("#captcha").show()
         } else {
