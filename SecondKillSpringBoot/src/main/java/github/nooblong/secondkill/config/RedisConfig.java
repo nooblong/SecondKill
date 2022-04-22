@@ -30,7 +30,7 @@ public class RedisConfig {
     public DefaultRedisScript<Long> script(){
         DefaultRedisScript<Long> redisScript = new DefaultRedisScript<>();
         //lock.lua位置
-        redisScript.setLocation(new ClassPathResource("lock.lua"));
+        redisScript.setLocation(new ClassPathResource("stock.lua"));
         redisScript.setResultType(Long.class);
         return redisScript;
     }
